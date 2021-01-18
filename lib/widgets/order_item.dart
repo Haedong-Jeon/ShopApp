@@ -35,6 +35,7 @@ class _OrderItemState extends State<OrderItem> {
               },
             ),
           ),
+          //확장 버튼 눌렀을 때 펼치기
           if (_expanded)
             Container(
               padding: EdgeInsets.symmetric(
