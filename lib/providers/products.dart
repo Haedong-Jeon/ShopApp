@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import './product.dart';
 
 class Products with ChangeNotifier {
@@ -46,15 +47,32 @@ class Products with ChangeNotifier {
   }
 
   void addProduct(Product product) {
-    Product newProduct = Product(
-      title: product.title,
-      imgURL: product.imgURL,
-      description: product.description,
-      price: product.price,
-      id: DateTime.now().toString(),
+    const url =
+        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products.json';
+    http
+        .post(
+      url,
+      body: json.encode({
+        'title': product.title,
+        'description': product.description,
+        'imgURL': product.imgURL,
+        'price': product.price,
+        'isFavorite': product.isFavorite,
+      }),
+    )
+        .then(
+      (response) {
+        final Product newProduct = Product(
+          title: product.title,
+          imgURL: product.imgURL,
+          description: product.description,
+          price: product.price,
+          id: json.decode(response.body)['name'],
+        );
+        _items.add(newProduct);
+        notifyListeners();
+      },
     );
-    _items.add(newProduct);
-    notifyListeners();
   }
 
   void updateProduct(String id, Product newProduct) {
