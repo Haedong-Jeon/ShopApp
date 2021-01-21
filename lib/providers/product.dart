@@ -35,14 +35,16 @@ class Product with ChangeNotifier {
         url,
         body: json.encode(
           {
-            isFavorite,
+            "isFavorite": isFavorite,
           },
         ),
       );
+      print('좋아요 ${response.body}');
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
       }
     } catch (error) {
+      print(error);
       _setFavValue(isFavorite);
     }
   }
