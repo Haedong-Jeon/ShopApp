@@ -75,7 +75,7 @@ class Products with ChangeNotifier {
     final targetIndex = _items.indexWhere((item) => item.id == id);
     if (targetIndex >= 0) {
       final url =
-          'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/${id}.json';
+          'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/$id.json';
       try {
         await http.patch(url,
             body: json.encode({
@@ -94,7 +94,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/${id}.json';
+        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/$id.json';
     final index = _items.indexWhere((product) => product.id == id);
     Product savedProduct = _items[index];
     _items.removeWhere((item) => item.id == id);
