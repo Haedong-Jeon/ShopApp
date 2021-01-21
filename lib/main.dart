@@ -1,7 +1,9 @@
+import 'package:ShopApp/screens/product_overview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './screens/product_detail_screen.dart';
 import './screens/auth_screen.dart';
+import './screens/splash_screen.dart';
 
 import './screens/user_product_screen.dart';
 import './screens/orders_screen.dart';
@@ -22,32 +24,53 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Auth(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Products(),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (context, auth, previousProducts) => Products(
+            auth.token,
+            previousProducts == null ? [] : previousProducts.items,
+            auth.userId,
+          ),
+          create: null,
         ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Orders(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (context, auth, previousProducts) => Orders(
+            auth.token,
+            previousProducts == null ? [] : previousProducts.orders,
+            auth.userId,
+          ),
+          create: null,
         ),
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          primarySwatch: Colors.indigo,
-          accentColor: Colors.indigoAccent,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (context, authData, _) => MaterialApp(
+          title: 'MyShop',
+          theme: ThemeData(
+            primarySwatch: Colors.indigo,
+            accentColor: Colors.indigoAccent,
+            fontFamily: 'Lato',
+          ),
+          home: authData.isAuth
+              ? ProductOverviewScreen()
+              : FutureBuilder(
+                  future: authData.tryAutoLogin(),
+                  builder: (context, authResultSnapshot) =>
+                      authResultSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
+          routes: {
+            ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
+            CartScreen.routeName: (context) => CartScreen(),
+            OrdersScreen.routeName: (context) => OrdersScreen(),
+            UserProductScreen.routeName: (context) => UserProductScreen(),
+            EditProdcutScreen.routeName: (context) => EditProdcutScreen(),
+            AuthScreen.routeName: (context) => AuthScreen(),
+          },
         ),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
-          CartScreen.routeName: (context) => CartScreen(),
-          OrdersScreen.routeName: (context) => OrdersScreen(),
-          UserProductScreen.routeName: (context) => UserProductScreen(),
-          EditProdcutScreen.routeName: (context) => EditProdcutScreen(),
-          AuthScreen.routeName: (context) => AuthScreen(),
-        },
       ),
     );
   }

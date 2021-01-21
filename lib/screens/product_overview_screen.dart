@@ -21,8 +21,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showOnlyFavorites = false;
   bool _isInit = true;
   Future _products;
-  Future _obtainProductsFuture() {
-    return Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+  Future _obtainProductsFuture() async {
+    return await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts();
   }
 
   @override
@@ -38,21 +39,22 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
     else {
       _products.catchError((error) {
         showDialog<Null>(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text('Something went wrong - ${error.toString()}'),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('close'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            });
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Something went wrong - ${error.toString()}!'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       });
       _isInit = false;
       super.didChangeDependencies();

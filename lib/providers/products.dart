@@ -6,7 +6,11 @@ import '../models/http_exceptions.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [];
-
+  final String authToken;
+  final String userId;
+  Products(this.authToken, this._items, this.userId) {
+    print('${this.authToken}과 ${this._items}로 초기화');
+  }
   List<Product> get items {
     return [..._items];
   }
@@ -15,9 +19,12 @@ class Products with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  Future<void> fetchAndSetProducts() async {
-    const url =
-        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products.json';
+  Future<void> fetchAndSetProducts([bool filterdByUser = false]) async {
+    final filterString =
+        filterdByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    String url =
+        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString';
+
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -25,13 +32,19 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+      url =
+          'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       extractedData.forEach((productId, productData) {
         loadedProducts.add(Product(
           id: productId,
           title: productData['title'],
           description: productData['description'],
           price: productData['price'],
-          isFavorite: productData['isFavorite'],
+          isFavorite:
+              favoriteData == null ? false : favoriteData[productId] ?? false,
           imgURL: productData['imgURL'],
         ));
       });
@@ -43,8 +56,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url =
-        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products.json?auth=$authToken';
 
     try {
       final response = await http.post(
@@ -54,7 +67,7 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imgURL': product.imgURL,
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          'creatorId': userId,
         }),
       );
       final Product newProduct = Product(
@@ -65,6 +78,7 @@ class Products with ChangeNotifier {
         id: json.decode(response.body)['name'],
       );
       _items.add(newProduct);
+      print(response.body);
       notifyListeners();
     } catch (error) {
       throw (error);
@@ -75,16 +89,21 @@ class Products with ChangeNotifier {
     final targetIndex = _items.indexWhere((item) => item.id == id);
     if (targetIndex >= 0) {
       final url =
-          'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/$id.json';
+          'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
       try {
-        await http.patch(url,
-            body: json.encode({
+        await http.patch(
+          url,
+          body: json.encode(
+            {
               'title': newProduct.title,
               'description': newProduct.description,
               'imgURL': newProduct.imgURL,
               'price': newProduct.price,
-            }));
+            },
+          ),
+        );
         _items[targetIndex] = newProduct;
+
         notifyListeners();
       } catch (error) {
         throw (error);
@@ -94,7 +113,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/$id.json';
+        'https://flutter-shopapp-9b7b2-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
     final index = _items.indexWhere((product) => product.id == id);
     Product savedProduct = _items[index];
     _items.removeWhere((item) => item.id == id);
