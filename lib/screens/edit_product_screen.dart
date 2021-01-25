@@ -81,6 +81,8 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
         try {
           await Provider.of<Products>(context, listen: false)
               .addProduct(_editedProduct);
+
+          Navigator.of(context).pop();
         } catch (error) {
           await showDialog<Null>(
             context: context,
@@ -258,7 +260,7 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
                                 imgURL: value,
                               );
                             },
-                            onFieldSubmitted: (_) => _saveForm(),
+                            // onFieldSubmitted: (_) => _saveForm(),
                             validator: (value) {
                               if (value.isEmpty) {
                                 return '\'image url\' is empty';
