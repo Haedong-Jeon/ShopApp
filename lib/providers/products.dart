@@ -43,12 +43,11 @@ class Products with ChangeNotifier {
           title: productData['title'],
           description: productData['description'],
           price: productData['price'],
-          isFavorite: favoriteData == null
-              ? false
-              : favoriteData[productId]['isFavorite'] ?? false,
+          isFavorite: false,
           imgURL: productData['imgURL'],
         ));
       });
+
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {

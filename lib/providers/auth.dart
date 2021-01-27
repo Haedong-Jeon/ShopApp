@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/http_exceptions.dart';
+import '../models/user.dart';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -67,6 +68,7 @@ class Auth with ChangeNotifier {
           'token': _token,
           'userId': _userId,
           'expiryDate': _expiryDate.toIso8601String(),
+          'userEmail': email,
         },
       );
       prefs.setString('userData', userData);
@@ -98,6 +100,8 @@ class Auth with ChangeNotifier {
     _token = extractedUserData['token'];
     _userId = extractedUserData['userId'];
     _expiryDate = expiryDate;
+    var user = User();
+    user.userName = extractedUserData['userEmail'];
     notifyListeners();
     _autoLogout();
     return true;

@@ -38,7 +38,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       return;
     else {
       _products.catchError((error) {
-        showDialog<Null>(
+        showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
@@ -46,7 +46,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               content: Text('Something went wrong - ${error.toString()}!'),
               actions: <Widget>[
                 FlatButton(
-                  child: Text('close'),
+                  child: Text('닫기'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
