@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../models/http_exceptions.dart';
+import '../models/user.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -20,16 +21,11 @@ class AuthScreen extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0, 1],
-              ),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Image.asset(
+              'assets/images/auth_screen_image.jpg',
+              fit: BoxFit.cover,
             ),
           ),
           SingleChildScrollView(
@@ -44,10 +40,9 @@ class AuthScreen extends StatelessWidget {
                     child: Container(
                       margin: EdgeInsets.only(bottom: 20.0),
                       padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 25.0),
                       transform: Matrix4.rotationZ(-8 * pi / 180)
                         ..translate(-10.0),
-                      // ..translate(-10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.indigo,
@@ -60,7 +55,7 @@ class AuthScreen extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        'MyShop',
+                        'TAGby Shop',
                         style: TextStyle(
                           color: Theme.of(context).accentTextTheme.title.color,
                           fontSize: 50,
@@ -141,11 +136,11 @@ class _AuthCardState extends State<AuthCard>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('error'),
+          title: Text('에러'),
           content: Text(message),
           actions: <Widget>[
             FlatButton(
-              child: Text('ok'),
+              child: Text('확인'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -180,17 +175,17 @@ class _AuthCardState extends State<AuthCard>
         );
       }
     } on HttpException catch (error) {
-      String errorMessage = 'could not authenticate';
+      String errorMessage = '접속 실패';
       if (error.message.contains('EMAIL_EXISTS')) {
-        errorMessage = 'email already exists!';
+        errorMessage = '이미 존재하는 이메일 입니다.';
       } else if (error.message.contains('INVALID_EMAIL')) {
-        errorMessage = 'invalid email!';
+        errorMessage = '이메일 형식이 옳지 않습니다.';
       } else if (error.message.contains('WEAK_PASSWORD')) {
-        errorMessage = 'weak password!';
+        errorMessage = '패스워드가 약합니다.';
       } else if (error.message.contains('EMAIL_NOT_FOUND')) {
-        errorMessage = 'could not found email';
+        errorMessage = '이메일을 찾을 수 없습니다.';
       } else if (error.message.contains('INVALID_PASSWORD')) {
-        errorMessage = 'password not correct';
+        errorMessage = '비밀번호가 틀렸습니다.';
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
@@ -199,6 +194,8 @@ class _AuthCardState extends State<AuthCard>
     }
     setState(() {
       _isLoading = false;
+      User user = User();
+      user.userName = _authData['email'];
     });
   }
 
@@ -220,6 +217,7 @@ class _AuthCardState extends State<AuthCard>
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Card(
+      color: Colors.white.withOpacity(0.7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -240,11 +238,11 @@ class _AuthCardState extends State<AuthCard>
             child: Column(
               children: <Widget>[
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'E-Mail'),
+                  decoration: InputDecoration(labelText: '이메일'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value.isEmpty || !value.contains('@')) {
-                      return 'Invalid email!';
+                      return '이메일이 옳지 않습니다.';
                     }
                     return null;
                   },
@@ -253,12 +251,12 @@ class _AuthCardState extends State<AuthCard>
                   },
                 ),
                 TextFormField(
-                  decoration: InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(labelText: '비밀번호'),
                   obscureText: true,
                   controller: _passwordController,
                   validator: (value) {
                     if (value.isEmpty || value.length < 5) {
-                      return 'Password is too short!';
+                      return '비밀번호가 너무 짧습니다.';
                     }
                   },
                   onSaved: (value) {
@@ -276,13 +274,12 @@ class _AuthCardState extends State<AuthCard>
                     opacity: _opacityAnimation,
                     child: TextFormField(
                       enabled: _authMode == AuthMode.Signup,
-                      decoration:
-                          InputDecoration(labelText: 'Confirm Password'),
+                      decoration: InputDecoration(labelText: '비밀번호 확인'),
                       obscureText: true,
                       validator: _authMode == AuthMode.Signup
                           ? (value) {
                               if (value != _passwordController.text) {
-                                return 'Passwords do not match!';
+                                return '비밀번호가 일치하지 않습니다.';
                               }
                             }
                           : null,
@@ -296,8 +293,7 @@ class _AuthCardState extends State<AuthCard>
                   CircularProgressIndicator()
                 else
                   RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                    child: Text(_authMode == AuthMode.Login ? '로그인' : '회원 가입'),
                     onPressed: _submit,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -309,7 +305,7 @@ class _AuthCardState extends State<AuthCard>
                   ),
                 FlatButton(
                   child: Text(
-                      '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                      '${_authMode == AuthMode.Login ? '회원 가입' : '로그인'} 하기'),
                   onPressed: _switchAuthMode,
                   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

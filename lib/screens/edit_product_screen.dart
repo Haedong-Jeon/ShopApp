@@ -142,7 +142,7 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
                 child: ListView(
                   children: <Widget>[
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'title'),
+                      decoration: InputDecoration(labelText: '상품명'),
                       initialValue: _initValues['title'],
                       textInputAction: TextInputAction.next,
                       onFieldSubmitted: (_) {
@@ -160,13 +160,13 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
                       },
                       validator: (value) {
                         if (value.isEmpty) {
-                          return '\'title\' is empty';
+                          return '상품명은 비워둘 수 없습니다.';
                         }
                         return null;
                       },
                     ),
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'price'),
+                      decoration: InputDecoration(labelText: '가격'),
                       initialValue: _initValues['price'],
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
@@ -186,16 +186,16 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
                         );
                       },
                       validator: (value) {
-                        if (value.isEmpty) return '\'price\' is empty';
+                        if (value.isEmpty) return '가격은 비워둘 수 없습니다.';
                         if (double.tryParse(value) == null)
-                          return 'invalid input in \'price\'';
+                          return '옳지 않은 형식 입니다.';
                         if (double.parse(value) <= 0)
-                          return 'price must higher than 0';
+                          return '0\$보다 높은 가격을 입력하세요.';
                         return null;
                       },
                     ),
                     TextFormField(
-                      decoration: InputDecoration(labelText: 'description'),
+                      decoration: InputDecoration(labelText: '상세 설명'),
                       initialValue: _initValues['description'],
                       maxLines: 5,
                       keyboardType: TextInputType.multiline,
@@ -212,9 +212,8 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
                       },
                       validator: (value) {
                         if (value.isEmpty)
-                          return '\'description\' is empty';
-                        else if (value.length < 5)
-                          return 'too short description';
+                          return '상세 설명란은 비워둘 수 없습니다.';
+                        else if (value.length < 5) return '설명이 너무 짧습니다.';
                         return null;
                       },
                     ),
@@ -263,11 +262,11 @@ class _EditProdcutScreenState extends State<EditProdcutScreen> {
                             // onFieldSubmitted: (_) => _saveForm(),
                             validator: (value) {
                               if (value.isEmpty) {
-                                return '\'image url\' is empty';
+                                return '이미지 URL은 비워둘 수 없습니다.';
                               }
                               if (!value.startsWith('http') &&
                                   !value.startsWith('https')) {
-                                return 'this is invalid url';
+                                return '옳지 않은 형식 입니다.';
                               }
                               return null;
                             },

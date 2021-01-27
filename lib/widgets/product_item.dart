@@ -57,11 +57,11 @@ class ProductItem extends StatelessWidget {
               Scaffold.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'item added!',
+                    '장바구니에 추가 됐습니다!',
                   ),
                   duration: Duration(seconds: 1),
                   action: SnackBarAction(
-                    label: 'UNDO',
+                    label: '취소',
                     onPressed: () {
                       cart.removeSingleItem(product.id);
                     },

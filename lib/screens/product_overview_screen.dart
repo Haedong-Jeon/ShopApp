@@ -66,7 +66,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'my shop',
+          '전체 보기',
         ),
         actions: <Widget>[
           Consumer<Cart>(
@@ -96,11 +96,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             icon: Icon(Icons.more_vert),
             itemBuilder: (_) => [
               PopupMenuItem(
-                child: Text('only favorite'),
+                child: Text('좋아요 누른 상품만'),
                 value: FilterOption.Favorites,
               ),
               PopupMenuItem(
-                child: Text('all'),
+                child: Text('모두'),
                 value: FilterOption.All,
               ),
             ],

@@ -11,7 +11,7 @@ class CartScreen extends StatelessWidget {
     final Cart cart = Provider.of<Cart>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('your cart'),
+        title: Text('장바구니'),
       ),
       body: Column(
         children: <Widget>[
@@ -23,7 +23,7 @@ class CartScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    'total',
+                    '합계',
                     style: TextStyle(
                       fontSize: 20,
                     ),
@@ -86,7 +86,7 @@ class _OrderButtonState extends State<OrderButton> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : Text('ORDER NOW'),
+          : Text('지금 주문'),
       onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
           ? null
           : () async {
